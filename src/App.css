@@ -1,0 +1,270 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  font-size: 18px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #000000f7;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+.navbar {
+  border: solidcolor;
+  color: aliceblue;
+}
+
+button {
+  padding: 15px 15px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  margin: 5px;
+}
+/* Green button for "Create" */
+.createbutton {
+  background-color: #28a745; /* Green */
+}
+.createbutton:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+/* Yellow button for "Update" */
+.updatebutton {
+  background-color: #ffc107; /* Yellow */
+  color: black; /* Black text for contrast */
+}
+
+.updatebutton:hover {
+  background-color: #e0a800; /* Darker yellow on hover */
+}
+
+/* Red button for "Delete" */
+.deletebutton {
+  background-color: #dc3545; /* Red */
+}
+
+.deletebutton:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+.chart-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap; /* Ensures charts stack if the screen width is too small */
+  gap: 20px; /* Adds space between the charts */
+}
+
+.chart-container {
+  flex: 1 1 45%; /* Ensures charts are responsive and take up equal width */
+  max-width: 60%; /* Limits the maximum width */
+  max-height: 100%; /* Limits the maximum height */
+}
+/* General Reset */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #000000;
+}
+body,
+html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Layout Structure */
+.dashboard {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 180px;
+  background-color: #d5eaff;
+  color: rgb(0, 0, 0);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: static;
+}
+
+.sidebar h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  position: sticky;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+.sidebar ul li:hover {
+  text-decoration: underline;
+}
+
+.toggle-dark-mode {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  background-color: #000000;
+  overflow-y: auto;
+  color: #ffffff;
+  margin-top: 70px; /* Space to avoid content overlap with the fixed top bar */
+  padding: 20px; /* General padding for content */
+}
+
+header h1 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+.summary-cards {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.card {
+  flex: 1;
+  background: #fefefe;
+  color: rgb(255, 255, 255);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4caf50;
+}
+
+.charts {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.chart {
+  flex: 1;
+  background: #e4c1c1;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.transactions {
+  background: #fefefe;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.transactions h3 {
+  margin-bottom: 20px;
+}
+/* Top bar styling */
+.top-bar {
+  position: fixed; /* Keeps the bar fixed at the top */
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width */
+  z-index: 1000; /* Ensure it stays above other elements */
+  background-color: #007bff; /* Blue background (customize as needed) */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Padding for better appearance */
+  display: flex;
+  justify-content: center; /* Align items horizontally */
+  align-items: center; /* Center items vertically */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+}
+
+/* Add new entry button */
+.top-bar .new-entry-button {
+  background-color: white;
+  color: #007bff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.top-bar .new-entry-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  color: white;
+}
+
+/* Content area styling */
+.content {
+  margin-top: 70px; /* Space to avoid content overlap with the fixed top bar */
+  padding: 20px; /* General padding for content */
+}
