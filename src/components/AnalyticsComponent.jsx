@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Bar, Pie } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,8 +9,8 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement,
 } from "chart.js";
+import { useAuth0 } from "@auth0/auth0-react";
 
 ChartJS.register(
   CategoryScale,
@@ -18,11 +18,12 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend,
-  ArcElement
+  Legend
 );
 
 const AnalyticsComponent = () => {
+  const { isAuthenticated, loginWithRedirect, getAccessTokenSilently } =
+    useAuth0();
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [budgets, setBudgets] = useState([]);
@@ -30,13 +31,28 @@ const AnalyticsComponent = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!isAuthenticated) {
+        await loginWithRedirect(); // Redirect to login if not authenticated
+        return;
+      }
+
       try {
+        const token = await getAccessTokenSilently();
+
         const [expenseRes, categoryRes, budgetRes, incomeRes] =
           await Promise.all([
-            axios.get("http://localhost:3000/expenses"),
-            axios.get("http://localhost:3000/categories"),
-            axios.get("http://localhost:3000/budgets"),
-            axios.get("http://localhost:3000/incomes"),
+            axios.get("http://localhost:3000/expenses", {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get("http://localhost:3000/categories", {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get("http://localhost:3000/budgets", {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get("http://localhost:3000/incomes", {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
           ]);
 
         setExpenses(expenseRes.data);
@@ -49,7 +65,11 @@ const AnalyticsComponent = () => {
     };
 
     fetchData();
-  }, []);
+  }, [isAuthenticated, loginWithRedirect, getAccessTokenSilently]);
+
+  if (!isAuthenticated) {
+    return <h3>Loading... Please log in to view your data.</h3>;
+  }
 
   // Data for Total Income vs. Total Expenses (Bar Chart)
   const totalIncome = incomes.reduce(

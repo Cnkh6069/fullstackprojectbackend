@@ -1,6 +1,14 @@
+//BudgetTable.jsx
 import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const BudgetTable = ({ budgets, onUpdateBudget, onDeleteBudget }) => {
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
+
+  if (!isAuthenticated) {
+    return <h2>Please log in to view your budgets.</h2>;
+  }
+
   return (
     <table>
       <thead>
