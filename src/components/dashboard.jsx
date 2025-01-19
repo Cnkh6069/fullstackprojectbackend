@@ -1,36 +1,25 @@
-import React from "react";
-import { Link, Outlet } from "react-router-dom";
+//dashboard.jsx
+import { useAuth0 } from "@auth0/auth0-react";
+import { Link } from "react-router-dom";
+import AuthLogoutButton from "./AuthLogoutButton";
 
 const Dashboard = () => {
-  return (
-    <div className="dashboard">
-      {/* Sidebar with Links */}
-      <aside className="sidebar">
-        <h2>Fast Budget</h2>
-        <ul>
-          <li>
-            <Link to="/">Home Page</Link>
-          </li>
-          <li>
-            <Link to="/dashboard">Dashboard</Link>
-          </li>
-          <li>
-            <Link to="/expenses">Expenses</Link>
-          </li>
-          <li>
-            <Link to="/incomes">Incomes</Link>
-          </li>
-          <li>
-            <Link to="/budgets">Budgets</Link>
-          </li>
-        </ul>
-      </aside>
+  const { user, isAuthenticated, isLoading } = useAuth0();
 
-      {/* Main Content */}
-      <main className="content">
-        <Outlet />
-      </main>
+  if (isLoading) return <p>Loading...</p>;
+
+  return isAuthenticated ? (
+    <div>
+      <h1>Welcome, {user?.name}</h1>
+      <AuthLogoutButton />
+      <nav>
+        <Link to="/expenses">Expenses</Link> |{" "}
+        <Link to="/incomes">Incomes</Link> |<Link to="/budgets">Budgets</Link> |{" "}
+        <Link to="/analytics">Analytics</Link>
+      </nav>
     </div>
+  ) : (
+    <p>Please log in to access the dashboard.</p>
   );
 };
 

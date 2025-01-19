@@ -1,9 +1,9 @@
 // LoginPage.js
 import React, { useState } from "react";
-import { useAuth } from "./AuthContext";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const LoginPage = () => {
-  const { login } = useAuth();
+  const { login } = useAuth0();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
 

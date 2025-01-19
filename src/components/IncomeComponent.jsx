@@ -1,7 +1,11 @@
+//incomeComponent.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const IncomeComponent = () => {
+  const { user, isAuthenticated, loginWithRedirect, logout, isLoading } =
+    useAuth0();
   const [incomes, setIncomes] = useState([]);
   const [categories, setCategories] = useState([]);
   const [newIncome, setNewIncome] = useState({
@@ -10,22 +14,28 @@ const IncomeComponent = () => {
     categoryID: "",
   });
 
-  // Fetch existing income records and categories
+  // Fetch income records and categories when user is authenticated
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [incomeRes, categoryRes] = await Promise.all([
-          axios.get("http://localhost:3000/incomes"),
-          axios.get("http://localhost:3000/categories"),
-        ]);
-        setIncomes(incomeRes.data);
-        setCategories(categoryRes.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
+    if (isAuthenticated) {
+      const fetchData = async () => {
+        try {
+          const [incomeRes, categoryRes] = await Promise.all([
+            axios.get("http://localhost:3000/incomes", {
+              headers: { Authorization: `Bearer ${user?.sub}` },
+            }),
+            axios.get("http://localhost:3000/categories", {
+              headers: { Authorization: `Bearer ${user?.sub}` },
+            }),
+          ]);
+          setIncomes(incomeRes.data);
+          setCategories(categoryRes.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+      fetchData();
+    }
+  }, [isAuthenticated, user]);
 
   // Handle input changes for new income
   const handleInputChange = (e) => {
@@ -41,11 +51,13 @@ const IncomeComponent = () => {
     try {
       const response = await axios.post(
         "http://localhost:3000/incomes",
-        newIncome
+        newIncome,
+        {
+          headers: { Authorization: `Bearer ${user?.sub}` },
+        }
       );
       setIncomes((prev) => [...prev, response.data]);
-      window.location.reload();
-      setNewIncome({ incomeName: "", incomeAmt: "", categoryID: "" }); // Clear form
+      setNewIncome({ incomeName: "", incomeAmt: "", categoryID: "" });
       alert("Income created successfully!");
     } catch (error) {
       console.error("Error adding income:", error);
@@ -88,7 +100,10 @@ const IncomeComponent = () => {
     try {
       const response = await axios.put(
         `http://localhost:3000/incomes/${incomeId}`,
-        updatedIncome
+        updatedIncome,
+        {
+          headers: { Authorization: `Bearer ${user?.sub}` },
+        }
       );
       setIncomes((prevIncomes) =>
         prevIncomes.map((income) =>
@@ -105,7 +120,9 @@ const IncomeComponent = () => {
   // Delete an income
   const deleteIncome = async (incomeId) => {
     try {
-      await axios.delete(`http://localhost:3000/incomes/${incomeId}`);
+      await axios.delete(`http://localhost:3000/incomes/${incomeId}`, {
+        headers: { Authorization: `Bearer ${user?.sub}` },
+      });
       setIncomes((prev) => prev.filter((income) => income._id !== incomeId));
       alert("Income deleted successfully!");
     } catch (error) {
@@ -114,101 +131,111 @@ const IncomeComponent = () => {
     }
   };
 
+  // Handle login if not authenticated
+  if (isLoading) return <div>Loading...</div>;
+
   return (
     <div>
-      <div className="top-bar ">
-        {/* Income Form */}
+      {isAuthenticated ? (
+        <div>
+          <div className="top-bar ">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                createIncome();
+              }}
+            >
+              <label> Desc: </label>
+              <input
+                type="text"
+                name="incomeName"
+                placeholder="Name of Income"
+                value={newIncome.incomeName}
+                onChange={handleInputChange}
+                required
+              />
+              <label> Amount: </label>
+              <input
+                type="number"
+                name="incomeAmt"
+                placeholder="Income Amount"
+                value={newIncome.incomeAmt}
+                onChange={handleInputChange}
+                required
+              />
+              <label> Category: </label>
+              <select
+                name="categoryID"
+                value={newIncome.categoryID}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Select Category</option>
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.Name}
+                  </option>
+                ))}
+              </select>
+              <button className="createbutton" type="submit">
+                Create Income
+              </button>
+            </form>
+          </div>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            createIncome();
-          }}
-        >
-          <label> Desc: </label>
-          <input
-            type="text"
-            name="incomeName"
-            placeholder="Name of Income"
-            value={newIncome.incomeName}
-            onChange={handleInputChange}
-            required
-          />
-          <label> Amount: </label>
-          <input
-            type="number"
-            name="incomeAmt"
-            placeholder="Income Amount"
-            value={newIncome.incomeAmt}
-            onChange={handleInputChange}
-            required
-          />
-          <label> Category: </label>
-          <select
-            name="categoryID"
-            value={newIncome.categoryID}
-            onChange={handleInputChange}
-            required
-          >
-            <option value="">Select Category</option>
-            {categories.map((category) => (
-              <option key={category._id} value={category._id}>
-                {category.Name}
-              </option>
-            ))}
-          </select>
-          <button className="createbutton" type="submit">
-            Create Income
-          </button>
-        </form>
-      </div>
-      {/* Income Table */}
-      <h3>Incomes</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Income ID</th>
-            <th>Income Name</th>
-            <th>Category</th>
-            <th>Income Amount</th>
-            <th>Created On</th>
-            <th>Updated On</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {incomes.length > 0 ? (
-            incomes.map((income) => (
-              <tr key={income._id}>
-                <td>{income._id}</td>
-                <td>{income.incomeName}</td>
-                <td>{income.categoryID[0]?.Name}</td>
-                <td>${income.incomeAmt}</td>
-                <td>{new Date(income.createdAt).toLocaleString()}</td>
-                <td>{new Date(income.updatedAt).toLocaleString()}</td>
-                <td>
-                  <button
-                    className="updatebutton"
-                    onClick={() => updateIncome(income._id)}
-                  >
-                    Update
-                  </button>
-                  <button
-                    className="deletebutton"
-                    onClick={() => deleteIncome(income._id)}
-                  >
-                    Delete
-                  </button>
-                </td>
+          <h3>Incomes</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Income ID</th>
+                <th>Income Name</th>
+                <th>Category</th>
+                <th>Income Amount</th>
+                <th>Created On</th>
+                <th>Updated On</th>
+                <th>Action</th>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6">No income records found</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {incomes.length > 0 ? (
+                incomes.map((income) => (
+                  <tr key={income._id}>
+                    <td>{income._id}</td>
+                    <td>{income.incomeName}</td>
+                    <td>{income.categoryID[0]?.Name}</td>
+                    <td>${income.incomeAmt}</td>
+                    <td>{new Date(income.createdAt).toLocaleString()}</td>
+                    <td>{new Date(income.updatedAt).toLocaleString()}</td>
+                    <td>
+                      <button
+                        className="updatebutton"
+                        onClick={() => updateIncome(income._id)}
+                      >
+                        Update
+                      </button>
+                      <button
+                        className="deletebutton"
+                        onClick={() => deleteIncome(income._id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6">No income records found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div>
+          <p>Please log in to access the income records.</p>
+          <button onClick={() => loginWithRedirect()}>Log in</button>
+        </div>
+      )}
     </div>
   );
 };

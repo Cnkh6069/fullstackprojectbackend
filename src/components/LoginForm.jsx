@@ -1,52 +1,17 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const LoginForm = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const { loginWithRedirect, isAuthenticated } = useAuth0();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    try {
-      const response = await axios.post("http://localhost:3000/users/login", {
-        username,
-        password,
-      });
-      // Save the token and redirect
-      localStorage.setItem("authToken", response.data.token);
-      alert("Login successful!");
-      window.location.href = "/"; // Redirect to the homepage
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Login failed. Please try again."
-      );
-    }
-  };
+  if (isAuthenticated) {
+    return <div>You are logged in!</div>;
+  }
 
   return (
     <div className="form-container">
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Username</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <label>Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {error && <p className="error">{error}</p>}
-        <button type="submit">Login</button>
-      </form>
+      <button onClick={() => loginWithRedirect()}>Login with Auth0</button>
     </div>
   );
 };
