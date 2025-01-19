@@ -1,95 +1,47 @@
-import { useState, useEffect } from "react";
-import axios, { all } from "axios";
-import React from "react";
-import "./App.css";
-
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import LoginRegisterPage from "./components/LoginRegisterPage.jsx";
-import LoginForm from "./components/LoginForm.jsx";
-import RegisterForm from "./components/RegisterForm.jsx";
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+import Dashboard from "./components/Dashboard";
 import ExpenseComponent from "./components/ExpenseComponent";
 import IncomeComponent from "./components/IncomeComponent";
-import BudgetComponent from "./components/budgetComponent";
-import AnalyticsComponent from "./components/AnalyticsComponent.jsx";
-import Dashboard from "./components/Dashboard.jsx";
+import BudgetComponent from "./components/BudgetComponent";
+import AnalyticsComponent from "./components/AnalyticsComponent";
+import LoginRegisterPage from "./components/RegisterPage";
+import LoginPage from "./components/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const refreshPage = () => {
-    window.location.reload();
-  };
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Dashboard />,
-      children: [
-        {
-          path: "/",
-          element: (
-            <div>
-              <h3>Welcome to Rocket Budget Tracking Platform</h3>
-              <h4>Please select your options</h4>
-              <h5>Register New Account or Login</h5>
-              <RegisterForm />
-              <br />
-              <Link to="/login" className="nav-link">
-                Login
-              </Link>
-              <LoginForm />
-              <p></p>
-            </div>
-          ),
-        },
-        {
-          path: "expenses",
-          element: (
-            <div>
-              <h3>Records of Expenses</h3>
-              <ExpenseComponent />
-            </div>
-          ),
-        },
-        {
-          path: "/dashboard",
-          element: (
-            <div>
-              <h3>Dashboard</h3>
-              <AnalyticsComponent />
-            </div>
-          ),
-        },
+  const { isAuthenticated, isLoading } = useAuth0();
 
-        {
-          path: "incomes",
-          element: (
-            <div>
-              <h3>Records of Income</h3>
-              <IncomeComponent />
-            </div>
-          ),
-        },
-        {
-          path: "budgets",
-          element: (
-            <div>
-              <h3>Set Budget</h3>
-              <BudgetComponent />
-            </div>
-          ),
-        },
-      ],
-    },
-  ]);
-  // create states to manage CRUD of Income, Budget and Expenses.
-  const [count, setCount] = useState(0);
-  const [incomes, setIncomes] = useState([]);
-  const [budgets, setBudgets] = useState([]);
-  const [expenses, setExpenses] = useState([]);
-  const [categories, setCategories] = useState([]);
-  //Call get all expenses on update of state.
+  if (isLoading) {
+    return <div>Loading...</div>; // Show a loading screen if Auth0 is loading
+  }
 
-  return <RouterProvider router={router} />;
+  return (
+    <Router>
+      <Routes>
+        {!isAuthenticated ? (
+          <Route path="/" element={<LoginRegisterPage />} />
+        ) : (
+          <>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/expenses" element={<ExpenseComponent />} />
+            <Route path="/incomes" element={<IncomeComponent />} />
+            <Route path="/budgets" element={<BudgetComponent />} />
+            <Route path="/analytics" element={<AnalyticsComponent />} />
+            {/* Protected routes */}
+            <Route
+              path="/protected"
+              element={
+                <ProtectedRoute>
+                  <ProtectedComponent />
+                </ProtectedRoute>
+              }
+            />
+          </>
+        )}
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
