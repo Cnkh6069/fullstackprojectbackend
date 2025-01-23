@@ -6,7 +6,7 @@ import IncomeComponent from "./components/IncomeComponent";
 import BudgetComponent from "./components/BudgetComponent";
 import AnalyticsComponent from "./components/AnalyticsComponent";
 import LoginRegisterPage from "./components/RegisterPage";
-import LoginPage from "./components/LoginPage";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {

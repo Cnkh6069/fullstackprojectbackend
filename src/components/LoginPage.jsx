@@ -9,7 +9,7 @@ const LoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(username, password);
+    login(userName, password);
   };
 
   return (

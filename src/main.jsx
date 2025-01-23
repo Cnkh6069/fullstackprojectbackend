@@ -6,8 +6,8 @@ import { Auth0Provider } from "@auth0/auth0-react";
 // require("dotenv").config();
 
 // Access environment variables
-const domain = "https://dev-5jyytnen4wy6mk4k.us.auth0.com/api/v2/";
-const clientId = "tlT8WOhz4qRsX77vjplaXeQAldHJ0W7h";
+const domain = import.meta.env.VITE_SOME_DOMAIN;
+const clientId = import.meta.env.VITE_SOME_CLIENT_ID;
 
 //Debugging: Ensure environment variables are loaded
 console.log("Auth0 Domain:", domain);
